@@ -1,0 +1,180 @@
+function getCustomerDetails(executionContext) {
+
+    debugger;
+
+    var formContext = executionContext.getFormContext();
+
+   var customerLookup =  formContext.getAttribute("parentaccountid").getValue(); 
+
+      if (customerLookup != null) {
+        var customerId = customerLookup[0].id.replace("{", "").replace("}", "");
+
+            Xrm.WebApi.retrieveRecord("account", customerId, "?$select=name,tt_customertype,_tt_country_value,tt_customergroup,_tt_province_value,_tt_district_value,_tt_city_value,address1_line1").then(
+
+                function success(result) {
+
+                    debugger;
+					
+					if(result.name != null)
+					{
+						 formContext.getAttribute("companyname").setValue(result.name);
+					}
+					else
+					{
+						formContext.getAttribute("companyname").setValue(null);
+					}
+					if (result.address1_line1 != null) {
+
+                        formContext.getAttribute("address1_line1").setValue(result.address1_line1);
+
+                    }
+
+                    else {
+
+                        formContext.getAttribute("address1_line1").setValue(null);
+
+                    }
+				
+					if (result.tt_customertype != null) {
+
+                        formContext.getAttribute("tt_customertype").setValue(result.tt_customertype);
+
+                    }
+
+                    else {
+
+                        formContext.getAttribute("tt_customertype").setValue(null);
+
+                    }
+					if (result.tt_customergroup != null) {
+
+                        formContext.getAttribute("tt_customergroup").setValue(result.tt_customergroup);
+
+                    }
+
+                    else {
+
+                        formContext.getAttribute("tt_customergroup").setValue(null);
+
+                    }
+					if (result._tt_country_value != null) {
+
+                        var countryID = result._tt_country_value;
+
+                        countryID = countryID.toUpperCase();
+
+                        countryID = "{" + countryID + "}";
+
+                        var lookupValue = new Array();
+
+                        lookupValue[0] = new Object();
+
+                        lookupValue[0].id = countryID;
+						lookupValue[0].name=result["_tt_country_value@OData.Community.Display.V1.FormattedValue"];
+
+                        lookupValue[0].entityType = "tt_country";
+
+                        formContext.getAttribute("tt_country").setValue(lookupValue);
+
+                    }
+
+                    else {
+
+                        formContext.getAttribute("tt_country").setValue(null);
+
+                    }
+
+                    if (result._tt_province_value != null) {
+
+                        var stateID = result._tt_province_value;
+
+                        stateID = stateID.toUpperCase();
+
+                        stateID = "{" + stateID + "}";
+
+                        var lookupValue1 = new Array();
+
+                        lookupValue1[0] = new Object();
+
+                        lookupValue1[0].id = stateID;
+						lookupValue1[0].name=result["_tt_province_value@OData.Community.Display.V1.FormattedValue"];
+						
+
+                        lookupValue1[0].entityType = "tt_province";
+
+                        formContext.getAttribute("tt_province").setValue(lookupValue1);
+
+                    }
+
+                    else {
+
+                        formContext.getAttribute("tt_province").setValue(null);
+
+                    }
+					 if (result._tt_district_value != null) {
+
+                        var stateID = result._tt_district_value;
+
+                        stateID = stateID.toUpperCase();
+
+                        stateID = "{" + stateID + "}";
+
+                        var lookupValue1 = new Array();
+
+                        lookupValue1[0] = new Object();
+
+                        lookupValue1[0].id = stateID;
+						lookupValue1[0].name=result["_tt_district_value@OData.Community.Display.V1.FormattedValue"];
+
+                        lookupValue1[0].entityType = "tt_district";
+
+                        formContext.getAttribute("tt_district").setValue(lookupValue1);
+
+                    }
+
+                    else {
+
+                        formContext.getAttribute("tt_district").setValue(null);
+
+                    }
+
+                    if (result._tt_city_value != null) {
+
+                        var cityID = result._tt_city_value;
+
+                        cityID = cityID.toUpperCase();
+
+                        cityID = "{" + cityID + "}";
+
+                        var lookupValue2 = new Array();
+
+                        lookupValue2[0] = new Object();
+
+                        lookupValue2[0].id = cityID;
+						lookupValue2[0].name=result["_tt_city_value@OData.Community.Display.V1.FormattedValue"];
+						
+                        lookupValue2[0].entityType = "tt_city";
+
+                        formContext.getAttribute("tt_city").setValue(lookupValue2);
+
+                    }
+
+                    else {
+
+                        formContext.getAttribute("tt_city").setValue(null);
+
+                    }
+
+                    //formContext.data.entity.save();     
+
+                },
+
+                function (error) {
+
+                    alert(error.message);
+
+                });
+
+        }
+
+   }
