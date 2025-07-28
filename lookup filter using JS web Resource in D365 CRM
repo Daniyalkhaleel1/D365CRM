@@ -1,0 +1,26 @@
+function filterCategory(executionContext)
+{
+    var formContext = executionContext.getFormContext();
+    var track = formContext.data.entity.attributes.get("ans_track").getValue();
+    alert(track);
+    if(track==119020001)
+    {
+        formContext.getControl("msdyn_transactioncategory").addPreSearch(academicTrackFilterLookup);
+    }
+    else if(track==119020000)
+    {
+        formContext.getControl("msdyn_transactioncategory").addPreSearch(employmentTrackFilterLookup);
+    }   
+}
+function academicTrackFilterLookup() {
+    var fetchXML = "<filter type='and'>"+
+    "      <condition attribute='ans_track' operator='eq' value='119020001' />"+
+    "    </filter>";
+    Xrm.Page.getControl("msdyn_transactioncategory").addCustomFilter(fetchXML,"msdyn_transactioncategory");
+}
+function employmentTrackFilterLookup() {
+    var fetchXML = "<filter type='and'>"+
+    "      <condition attribute='ans_track' operator='eq' value='119020000' />"+
+    "    </filter>";
+    Xrm.Page.getControl("msdyn_transactioncategory").addCustomFilter(fetchXML,"msdyn_transactioncategory");
+}
