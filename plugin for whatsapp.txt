@@ -1,0 +1,45 @@
+using System;
+using Microsoft.Xrm.Sdk;
+using System.Net.Http;
+using System.Net.Http.Headers;
+
+public class SendWhatsAppMessageOnLeadCreate : IPlugin
+{
+    public void Execute(IServiceProvider serviceProvider)
+    {
+        IPluginExecutionContext context = (IPluginExecutionContext)serviceProvider.GetService(typeof(IPluginExecutionContext));
+        IOrganizationServiceFactory factory = (IOrganizationServiceFactory)serviceProvider.GetService(typeof(IOrganizationServiceFactory));
+        IOrganizationService service = factory.CreateOrganizationService(context.UserId);
+
+        if (context.InputParameters.Contains("Target") && context.InputParameters["Target"] is Entity.Lead)
+        {
+            var lead = (Entities.Lead)context.InputParameters["Target"];
+
+            // Get the phone number of the lead
+            var phoneNumber = lead.GetAttributeValue<string>("telephone1");
+
+            // Use HttpClient to send a message through WhatsApp API
+            using (var client = new HttpClient())
+            {
+                // Add the API key or token to the request header
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "YOUR_API_KEY_OR_TOKEN");
+
+                // Build the message and phone number in the format required by the WhatsApp API
+                var message = new { text = "Hello, thank you for your interest in our product. We will be in touch soon." };
+                var phone = new { phoneNumber = phoneNumber };
+
+                // Send the message
+                var response = client.PostAsync("https://api.whatsapp.com/messages", new StringContent(message.ToString(), Encoding.UTF8, "application/json"));
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Message sent successfully
+                }
+                else
+                {
+                    // Handle the error
+                }
+            }
+        }
+    }
+}
